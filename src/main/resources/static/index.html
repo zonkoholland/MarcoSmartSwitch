@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Switch Toggle</title>
+</head>
+<body>
+    <header>Switch activation</header>
+    <button onclick="turnOn()">Turn switch on</button>
+    <button onclick="turnOff()">Turn switch off</button>
+    <button onclick="toggle()">Toggle switch</button>
+
+    <p id="status">Status: waiting...</p>
+
+    <script>
+        function turnOn() {
+            fetch("/marcoSwitch/on", {
+                method: "POST"
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("status").textContent = "Server says: " + data;
+                })
+                .catch(err => {
+                    document.getElementById("status").textContent = "Error: " + err;
+                });
+        }
+
+        function turnOff() {
+            fetch("/marcoSwitch/off", {
+                method: "POST"
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("status").textContent = "Server says: " + data;
+                })
+                .catch(err => {
+                    document.getElementById("status").textContent = "Error: " + err;
+                });
+        }
+
+        function toggle() {
+            fetch("/marcoSwitch/toggle", {
+                method: "POST"
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("status").textContent = "Server says: " + data;
+                })
+                .catch(err => {
+                    document.getElementById("status").textContent = "Error: " + err;
+                });
+        }
+    </script>
+</body>
+</html>
