@@ -19,10 +19,11 @@ public class SwitchConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/index.html", "/static/**", "/", "/marcoSwitch/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf.disable())
-                .formLogin(Customizer.withDefaults());
+                //.formLogin(Customizer.withDefaults());
+                .formLogin(login -> login.disable()); // 🔒 Disable login entirely
 
         return http.build();
     }
