@@ -1,5 +1,6 @@
 package com.example.smartSwitch.controller;
 
+import com.example.smartSwitch.entity.ArubaPayload;
 import com.example.smartSwitch.service.SwitchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,5 +32,12 @@ public class SwitchController {
     @PostMapping("/off")
     public Mono<String> switchOff() {
         return switchService.switchOff();
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<String> handleWebhook(@RequestBody ArubaPayload payload) {
+        System.out.println("BLE signal from: " + payload.getMac());
+        // Optional: decide whether to trigger a switch toggle
+        return ResponseEntity.ok("Received");
     }
 }
