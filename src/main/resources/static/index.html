@@ -3,14 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <title>Switch Toggle</title>
+    <style>
+        header {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #schedule-controls {
+            margin-top: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cron-unit-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+        .cron-unit-group label {
+            min-width: 110px;
+        }
+        .cron-unit-group input[type="number"] {
+            margin-left: 5px;
+        }
+        .cron-unit-group input[type="checkbox"] {
+            margin-left: 10px;
+        }
+        #schedule-method-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            margin: 0 5px 10px 5px;
+        }
+    </style>
 </head>
 <body>
 <header>Switch activation</header>
-<button onclick="turnOn()">Turn switch on</button>
-<button onclick="turnOff()">Turn switch off</button>
-<button onclick="toggle()">Toggle switch</button>
+<div style="text-align:center;">
+    <button onclick="turnOn()">Turn switch on</button>
+    <button onclick="turnOff()">Turn switch off</button>
+    <button onclick="toggle()">Toggle switch</button>
+    <button onclick="schedule()">Add schedule</button>
+</div>
 
-<p id="status">Status: waiting...</p>
+<div id="schedule-controls">
+    <div class="cron-unit-group">
+        <label for="second">Second:</label>
+        <select id="second">
+            <option value="*">*</option>
+            <script>
+                for(let i=0;i<60;i++){
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        <input type="checkbox" id="second-step-check" onchange="toggleStepInput('second')">
+        <label for="second-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="second-step" min="1" max="59" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div class="cron-unit-group">
+        <label for="minute">Minute:</label>
+        <select id="minute">
+            <option value="*">*</option>
+            <script>
+                for(let i=0;i<60;i++){
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        <input type="checkbox" id="minute-step-check" onchange="toggleStepInput('minute')">
+        <label for="minute-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="minute-step" min="1" max="59" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div class="cron-unit-group">
+        <label for="hour">Hour:</label>
+        <select id="hour">
+            <option value="*">*</option>
+            <script>
+                for(let i=0;i<24;i++){
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        <input type="checkbox" id="hour-step-check" onchange="toggleStepInput('hour')">
+        <label for="hour-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="hour-step" min="1" max="23" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div class="cron-unit-group">
+        <label for="day">Day:</label>
+        <select id="day">
+            <option value="*">*</option>
+            <script>
+                for(let i=1;i<=31;i++){
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        <input type="checkbox" id="day-step-check" onchange="toggleStepInput('day')">
+        <label for="day-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="day-step" min="1" max="31" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div class="cron-unit-group">
+        <label for="month">Month:</label>
+        <select id="month">
+            <option value="*">*</option>
+            <script>
+                for(let i=1;i<=12;i++){
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        <input type="checkbox" id="month-step-check" onchange="toggleStepInput('month')">
+        <label for="month-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="month-step" min="1" max="12" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div class="cron-unit-group">
+        <label for="weekday">Day of Week:</label>
+        <select id="weekday">
+            <option value="*">*</option>
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="7">Sunday</option>
+        </select>
+        <input type="checkbox" id="weekday-step-check" onchange="toggleStepInput('weekday')">
+        <label for="weekday-step-check" style="margin:0;">Step value</label>
+        <input type="number" id="weekday-step" min="1" max="7" style="display:none;width:60px;" placeholder="Step">
+    </div>
+    <div id="schedule-method-group">
+        <label for="schedule-method">Method:</label>
+        <select id="schedule-method">
+            <option value="on">Turn On</option>
+            <option value="off">Turn Off</option>
+            <option value="toggle">Toggle</option>
+        </select>
+    </div>
+</div>
+
+<div id="status"></div>
 
 <script>
     function turnOn() {
@@ -19,7 +163,7 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.getElementById("status").textContent = "Server says: " + data;
+                document.getElementById("status").textContent = "Response: " + data;
             })
             .catch(err => {
                 document.getElementById("status").textContent = "Error: " + err;
@@ -32,7 +176,7 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.getElementById("status").textContent = "Server says: " + data;
+                document.getElementById("status").textContent = "Response: " + data;
             })
             .catch(err => {
                 document.getElementById("status").textContent = "Error: " + err;
@@ -45,7 +189,55 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.getElementById("status").textContent = "Server says: " + data;
+                document.getElementById("status").textContent = "Response: " + data;
+            })
+            .catch(err => {
+                document.getElementById("status").textContent = "Error: " + err;
+            });
+    }
+
+    function toggleStepInput(unit) {
+        const check = document.getElementById(unit + '-step-check');
+        const input = document.getElementById(unit + '-step');
+        if (check.checked) {
+            input.style.display = 'inline-block';
+        } else {
+            input.style.display = 'none';
+        }
+    }
+
+    function getCronField(unit) {
+        const stepCheck = document.getElementById(unit + '-step-check');
+        const select = document.getElementById(unit);
+        if (stepCheck && stepCheck.checked) {
+            const stepValue = document.getElementById(unit + '-step').value;
+            return select.value + '/' + stepValue;
+        } else {
+            return select.value;
+        }
+    }
+
+    function schedule() {
+        const second = getCronField("second");
+        const minute = getCronField("minute");
+        const hour = getCronField("hour");
+        const day = getCronField("day");
+        const month = getCronField("month");
+        const weekday = getCronField("weekday");
+        const method = document.getElementById("schedule-method").value;
+
+        const cronExpression = `${second} ${minute} ${hour} ${day} ${month} ${weekday}`;
+
+        fetch("/marcoSwitch/schedule", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cron: cronExpression, method: method })
+        })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("status").textContent = "Response: " + data;
             })
             .catch(err => {
                 document.getElementById("status").textContent = "Error: " + err;

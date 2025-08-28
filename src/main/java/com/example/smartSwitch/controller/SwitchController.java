@@ -1,6 +1,9 @@
 package com.example.smartSwitch.controller;
 
 import com.example.smartSwitch.service.SwitchService;
+
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,5 +34,12 @@ public class SwitchController {
     @PostMapping("/off")
     public Mono<String> switchOff() {
         return switchService.switchOff();
+    }
+
+    @PostMapping("/schedule")
+    public Mono<String> addSchedule(@RequestBody Map<String, String> payload) {
+        String cron = payload.get("cron");
+        String method = payload.get("method");
+        return switchService.addSchedule(cron, method);
     }
 }
